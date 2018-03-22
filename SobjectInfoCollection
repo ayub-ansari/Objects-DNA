@@ -1,0 +1,19 @@
+String endpoint = URL.getSalesforceBaseUrl().toExternalForm()+'/services/data/v41.0/sobjects/';
+HttpRequest req = new HttpRequest();
+endpoint += '';
+req.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
+req.setHeader('Content-Type', 'application/json');
+req.setEndpoint(endpoint);
+req.setMethod('GET');
+Http httpreq = new Http();
+HttpResponse  res  = httpreq.send(req);
+Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(res.getBody());
+List<Object> ob = (List<Object>)m.get('sobjects');
+string csv = '';
+for(Object o : ob){
+    Map<String, Object> real = (Map<String, Object>)o;
+    if((Boolean)real.get('triggerable')){
+        csv+= real.get('name')+',';
+    }
+}
+system.debug(csv);
